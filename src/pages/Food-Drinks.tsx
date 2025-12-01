@@ -3,6 +3,8 @@ const FoodDrinks = () => {
     <div>
       <p>Food and drinks</p>
     </div>
+
+    // test
   );
 };
 
