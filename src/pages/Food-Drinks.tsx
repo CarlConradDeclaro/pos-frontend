@@ -1,10 +1,9 @@
-import { ShoppingCart, Search, ChevronDown, Grid2x2 } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { ShoppingCart, Search, ChevronDown } from 'lucide-react';
 import ProductCard from '../components/Food-Drinks/ProductCard';
 import PosSummaryItem from '../components/Food-Drinks/PosSummaryItem';
+import CategoryButon from '../components/Food-Drinks/CategoryButton';
 
-// --- MOCK DATA FOR LAYOUT ---
-
-// Define types for clarity, even though data is mocked
 export interface Product {
   id: number;
   name: string;
@@ -18,11 +17,11 @@ export interface Product {
 export interface PurchaseOrderItem {
   id: number;
   name: string;
-  quantity: string;
-  total: string;
+  quantity: number;
+  total: number;
+  imageUrl: string;
   imageAlt: string;
 }
-
 
 // Data for the Product Grid
 const MOCK_PRODUCTS: Product[] = [
@@ -60,35 +59,119 @@ const MOCK_PRODUCTS: Product[] = [
   { id: 32, name: 'Bottled Water', category: 'Drinks', price: 14.99, imageUrl: 'juice.jpg', unit: '/pc' },
   { id: 33, name: 'Halo-Halo', category: 'Dessert', price: 39.99, imageUrl: 'juice.jpg', unit: '/pc' },
   { id: 34, name: 'Vanilla Ice Cream', category: 'Dessert', price: 29.99, imageUrl: 'juice.jpg', unit: '/pc' },
-  { id: 35, name: 'Cookies and Cream Ice Cream', category: 'Dessert', price: 29.99, imageUrl: 'juice.jpg', unit: '/pc' },
+  { id: 35, name: 'Chocolate Ice Cream', category: 'Dessert', price: 29.99, imageUrl: 'juice.jpg', unit: '/pc' },
   { id: 36, name: 'Turon', category: 'Dessert', price: 24.99, imageUrl: 'juice.jpg', unit: '/pc' },
 ]
 
-// Data for the PO Summary
-const MOCK_PO_ITEMS: PurchaseOrderItem[] = [
-  { id: 1, name: 'Burger Patties', quantity: '65x', total: '$1,625.00', imageAlt: 'Burger Patties Image' },
-  { id: 2, name: 'Pizza Dough', quantity: '30x', total: '$255.00', imageAlt: 'Pizza Dough Image' },
-  { id: 3, name: 'Cola', quantity: '15x', total: '$22.50', imageAlt: 'Cola Image' },
-];
+const categories = ['All', 'Ulam', 'Silog', 'Sisig', 'Drinks', 'Dessert'];
 
-// Data for the financial summary
-const FINANCIAL_SUMMARY = {
-  subTotal: '$1,902.50',
-  tax: '$95.13',
-  totalAmount: '$1,997.63',
-};
-
-// --- SUB-COMPONENTS ---
-
-
-/**
- * Main POS Component
- */
 const PosScreen = () => {
+  const [subtotalAmount, setSubtotalAmount] = useState(0.00);
+  const [taxAmount, setTaxAmount] = useState(0.00);
+  const [totalAmount, setTotalAmount] = useState(0.00);
+  const [searchedWord, setSearchedWord] = useState("");
+  const [filteredProducts, setFilteredProducts] = useState<Product[]>(MOCK_PRODUCTS);
+  const [activeCategory, setActiveCategory] = useState(categories[0]);
+  const [poItems, setPoItems] = useState<Map<string, PurchaseOrderItem>>(new Map);
+
+  const CategoryGroup = () => {
+    const handleCategoryClick = (categoryName: string) => {
+      setActiveCategory(categoryName);
+    }
+
+    return (
+      <div className="flex space-x-2 mb-6 pb-2">
+        {categories.map((category) => (
+          <CategoryButon
+            key={category}
+            name={category}
+            isActive={category === activeCategory}
+            onClickFunc={handleCategoryClick}
+          />
+        ))}
+      </div>
+    )
+  };
+
+  const handlePoItems = (product: Product, quantity: number) => {
+    console.log('handlePoItems called');
+    setPoItems((previousMap) => {
+      const newMap = new Map(previousMap);
+
+      const existingItem = newMap.get(product.name);
+
+      if (!existingItem && quantity <= 0) { }
+      if (quantity <= 0) {
+        newMap.delete(product.name);
+      } else {
+        if (existingItem) {
+          if (existingItem.quantity === 0) {
+            newMap.delete(product.name);
+          }
+
+          newMap.set(product.name, {
+            id: existingItem.id,
+            name: existingItem.name,
+            quantity: quantity,
+            total: product.price * quantity,
+            imageUrl: existingItem.imageUrl,
+            imageAlt: existingItem.imageAlt
+          });
+        } else {
+          newMap.set(product.name, {
+            id: product.id,
+            name: product.name,
+            quantity: quantity,
+            total: product.price * quantity,
+            imageUrl: "https://upload.wikimedia.org/wikipedia/commons/b/be/Burger_King_Angus_Bacon_%26_Cheese_Steak_Burger.jpg",
+            imageAlt: product.name
+          })
+        }
+      }
+
+      return newMap;
+    })
+  }
+
+  // Function for deleting a POS Item using the delete button
+  // TODO: Make the product in the grid reflect to zero
+  const handleDeletePosItem = (product: string) => {
+    setPoItems((previous) => {
+      const newMap = new Map(previous);
+      newMap.delete(product);
+      return newMap;
+    })
+  }
+
+  useEffect(() => {
+    if (activeCategory === "All") {
+      setFilteredProducts(MOCK_PRODUCTS);
+      return;
+    }
+
+    const newFilteredProducts = MOCK_PRODUCTS.filter((product) => {
+      return product.category === activeCategory
+    })
+
+    setFilteredProducts(newFilteredProducts);
+  }, [activeCategory]);
+
+  useEffect(() => {
+    let subtotal = 0
+    poItems.forEach((item, _key) => {
+      subtotal += item.total;
+    });
+
+    setSubtotalAmount(subtotal);
+    setTaxAmount(subtotalAmount * 0.05);
+    setTotalAmount(subtotalAmount + taxAmount);
+  }, [poItems, subtotalAmount, taxAmount, totalAmount]);
+
+
   return (
     <div className="flex justify-center h-screen bg-gray-50 p-6">
 
-      {/* --- Left Column: Product Selector (8/12 width) --- */}
+      {/* Products Column */}
       <div className="flex-1 max-w-[calc(100%-350px)] p-6 rounded-xl mr-6 flex flex-col">
 
         {/* Header */}
@@ -101,90 +184,74 @@ const PosScreen = () => {
               type="text"
               placeholder='Search product here...'
               className='h-full w-full bg-inherit focus:outline-none focus:ring-green-500'
+              value={searchedWord}
+              onChange={(e) => setSearchedWord(e.target.value)}
             />
           </div>
         </div>
 
         {/* Supplier Dropdown and Search */}
-        {/* <div className="flex w-full items-center mb-6"> */}
         <div className="flex items-center w-full border border-gray-300 rounded-lg p-3 cursor-pointer hover:border-gray-400 transition-colors mb-6">
           <ShoppingCart className="h-5 text-gray-500 mr-3 flex-shrink-0" />
           <span className="text-gray-800 font-medium">Metro Meats Inc.</span>
           <ChevronDown className="h-4 text-gray-500 ml-auto" />
         </div>
 
-        {/* </div> */}
 
         {/* Category Tabs */}
-        <div className="flex space-x-2 mb-6 pb-2">
-          <button className="flex items-center px-4 py-2 text-sm font-medium text-green-500 bg-green-100 hover:border-green-500 rounded-xl transition-all gap-1.5">
-            <Grid2x2 />
-            All
-          </button>
-          <button className="px-4 py-2 text-sm font-medium text-gray-700 bg-white rounded-2xl hover:bg-gray-200 hover:border-green-600 transition-colors">
-            Ulam
-          </button>
-          <button className="px-4 py-2 text-sm font-medium text-gray-700 bg-white rounded-2xl hover:bg-gray-200 hover:border-green-600 transition-colors">
-            Silog
-          </button>
-          <button className="px-4 py-2 text-sm font-medium text-gray-700 bg-white rounded-2xl hover:bg-gray-200 hover:border-green-600 transition-colors">
-            Sisig
-          </button>
-          <button className="px-4 py-2 text-sm font-medium text-gray-700 bg-white rounded-2xl hover:bg-gray-200 hover:border-green-600 transition-colors">
-            Drinks
-          </button>
-          <button className="px-4 py-2 text-sm font-medium text-gray-700 bg-white rounded-2xl hover:bg-gray-200 hover:border-green-600 transition-colors">
-            Dessert
-          </button>
-        </div>
+        <CategoryGroup />
 
         {/* Product Grid */}
-        <div className="grid grid-cols-4 gap-6 overflow-y-auto pr-2 flex-grow">
-          {MOCK_PRODUCTS.map((product) => (
+        <div className="grid grid-cols-4 gap-6 overflow-y-auto pr-2">
+          {filteredProducts.map((product) => (
             <ProductCard
               key={product.id}
               product={product}
-              // In a real app, this would be a dynamic image URL
-              imagePlaceholder={`https://upload.wikimedia.org/wikipedia/commons/b/be/Burger_King_Angus_Bacon_%26_Cheese_Steak_Burger.jpg`}
+              imageLink={`https://upload.wikimedia.org/wikipedia/commons/b/be/Burger_King_Angus_Bacon_%26_Cheese_Steak_Burger.jpg`}
+              imageAlternative={product.name}
+              handlePoItems={handlePoItems}
             />
           ))}
-          {/* Filler cards to ensure the grid aligns properly if needed */}
-          <div className="col-span-1"></div>
-          <div className="col-span-1"></div>
-          <div className="col-span-1"></div>
         </div>
 
       </div>
 
-      {/* --- Right Column: PO Summary (fixed 350px width) --- */}
+      {/* PO Summary Column */}
       <div className="w-[350px] bg-white p-6 rounded-xl shadow-lg flex flex-col">
 
-        {/* Summary Header */}
         <h2 className="text-xl font-bold text-gray-800 border-b border-gray-200 pb-3 mb-4">PO Summary</h2>
 
         {/* List of PO Items */}
-        <div className="flex-grow overflow-y-auto pr-2 mb-6">
-          {MOCK_PO_ITEMS.map(item => (
-            <PosSummaryItem key={item.id} {...item} />
-          ))}
-          {/* Placeholder for more items to show scroll potential */}
-          <div className="text-center py-4 text-gray-400 text-sm">... More items would appear here ...</div>
-        </div>
+        {poItems.size > 0 ?
+          (
+            <div className="flex-grow overflow-y-auto pr-2 mb-6">
+              {[...poItems.values()].map((item) => (
+                <PosSummaryItem
+                  key={item.id}
+                  purchaseOrderItem={item}
+                  handleDeleteItem={handleDeletePosItem}
+                />
+              ))}
+            </div>
+          ) : (
+            <div className="text-center py-4 text-gray-400 text-sm">No items in the PO.</div>
+          )}
+
 
         {/* Financial Breakdown */}
         <div className="border-t border-gray-200 pt-4">
           <div className="flex justify-between text-sm mb-1 text-gray-600">
             <span>Sub Total</span>
-            <span>{FINANCIAL_SUMMARY.subTotal}</span>
+            <span>P{subtotalAmount.toFixed(2)}</span>
           </div>
           <div className="flex justify-between text-sm mb-4 text-gray-600">
             <span>Tax 5%</span>
-            <span>{FINANCIAL_SUMMARY.tax}</span>
+            <span>P{taxAmount.toFixed(2)}</span>
           </div>
 
           <div className="flex justify-between items-center text-lg font-bold text-gray-900 border-t pt-3">
             <span>Total Amount</span>
-            <span>{FINANCIAL_SUMMARY.totalAmount}</span>
+            <span>P{totalAmount.toFixed(2)}</span>
           </div>
         </div>
 
@@ -195,7 +262,7 @@ const PosScreen = () => {
         </button>
       </div>
 
-    </div>
+    </div >
   );
 };
 

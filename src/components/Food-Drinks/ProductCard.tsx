@@ -1,27 +1,40 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { type Product } from "../../pages/Food-Drinks";
 
 interface ProductProps {
   product: Product;
-  imagePlaceholder: string;
+  imageLink: string;
+  imageAlternative: string;
+  handlePoItems: (product: Product, quantity: number) => void;
 }
 
-const ProductCard = ({ product, imagePlaceholder }: ProductProps) => {
+const ProductCard = ({ product, imageLink, imageAlternative, handlePoItems }: ProductProps) => {
   const [quantity, setQuantity] = useState(0);
   const [isActive, setIsActive] = useState(false);
+  const isInitialMount = useRef(true);
 
   useEffect(() => {
-    if (quantity === 0) {
-      setIsActive(false);
+    // If statement to prevent calling handlePoItems every page load,
+    // only on state updates
+    if (isInitialMount.current) {
+      isInitialMount.current = false;
+      return;
     }
-  }, [quantity]);
+
+    if (quantity <= 0) {
+      setIsActive(false);
+    } else {
+      if (!isActive) { setIsActive(true) }
+    }
+      handlePoItems(product, quantity);
+  }, [quantity, product, isActive]);
 
   return (
-    <div className={`p-3 bg-white border rounded-lg ${isActive ? 'border-green-500' : 'border-gray-200'}`}>
+    <div className={`p-3 bg-white border rounded-lg transition-colors duration-50 shadow-sm ${isActive ? 'border-green-500' : 'border-gray-200'}`}>
       {/* Image Placeholder Area */}
       <div className="aspect-square rounded-md overflow-hidden mb-3 flex items-center justify-center">
         {/* This is a simple placeholder. In a real app, this would be an <img> tag. */}
-        <img src={imagePlaceholder} alt="" />
+        <img src={imageLink} alt={imageAlternative} />
         {/* <div className="w-full h-full" style={{ backgroundImage: `url(${imagePlaceholder})`, backgroundSize: 'cover', backgroundPosition: 'center' }}> */}
         {/*   {/* If an image URL is not available, we can display a text placeholder */}
         {/*   {imagePlaceholder.includes('placeholder') && ( */}
@@ -34,51 +47,43 @@ const ProductCard = ({ product, imagePlaceholder }: ProductProps) => {
       {/* Product Info */}
       <h3 className="font-semibold text-gray-800 text-nowrap overflow-x-scroll">{product.name}</h3>
       <p className="text-sm text-gray-500 mb-3">
-        P{product.price} {product.unit}
+        P{product.price}{product.unit}
       </p>
 
-      {/* Action Button/Quantity Control */}
-      {isActive ? (
-        <div className="flex justify-between items-center text-green-700 border border-green-700 rounded-md">
-          <button
-            className="px-2 text-xl font-bold transition-opacity hover:opacity-75"
-            onClick={() => setQuantity((previous) => previous - 1)}
-          >
-            -
-          </button>
-          {/* <span className="font-semibold">{quantity}</span> */}
-          <input
-            type="number"
-            value={quantity}
-            onChange={(e) => {
-              setQuantity(Number(e.target.value))
-            }}
-            className="w-6/12 text-center focus:outline-none 
+      <div className="flex justify-between items-center bg-green-100 text-green-500 border border-green-100 rounded-xl">
+        <button
+          className="px-5 py-1 text-xl font-bold bg-inherit transition-opacity hover:opacity-75 border-none"
+          onClick={() => {
+            if (quantity > 0) {
+              setQuantity((previous) => previous - 1)
+            }
+          }}
+        >
+          -
+        </button>
+        <input
+          type="number"
+          value={quantity}
+          min={0}
+          onChange={(e) => {
+            if (e.target.value !== "") { setQuantity(Number(e.target.value)) }
+          }}
+          className="w-6/12 text-center focus:outline-none bg-inherit 
             [appearance:textfield]
             [&::-webkit-inner-spin-button]:appearance-none
             [&::-webkit-outer-spin-button]:appearance-none 
             [&::-webkit-inner-spin-button]:m-0 
             [&::-webkit-outer-spin-button]:m-0
             "
-          />
-          <button
-            className="px-2 text-xl font-bold transition-opacity hover:opacity-75"
-            onClick={() => setQuantity((previous) => previous + 1)}
-          >
-            +
-          </button>
-        </div>
-      ) : (
+        />
         <button
-          className="w-full py-2 text-sm font-semibold text-green-500 border border-green-700 rounded-md hover:bg-green-50 transition-colors"
-          onClick={() => {
-            setIsActive(true);
-            setQuantity((previous) => previous + 1);
-          }}
+          className="px-5 py-0 text-xl font-bold bg-inherit transition-opacity hover:opacity-75 border-none"
+          onClick={() => setQuantity((previous) => previous + 1)}
         >
-          Add to PO
+          +
         </button>
-      )}
+      </div>
+
     </div>
   );
 };
