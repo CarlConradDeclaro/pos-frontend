@@ -46,7 +46,7 @@ const MAIN_MENU_ITEMS: MenuItem[] = [
     label: "Food & Drinks",
     href: "/food-drinks",
   },
-  { icon: MessageSquare, label: "Messages", href: "" },
+  { icon: MessageSquare, label: "Purchase Orders", href: "" },
   { icon: Receipt, label: "Bills", href: "" },
   { icon: Settings, label: "Settings", href: "" },
 ];
@@ -90,7 +90,7 @@ const SidebarItem: React.FC<{ item: MenuItem }> = ({ item }) => {
 // --- MAIN COMPONENT: Sidebar ---
 function Sidebar() {
   return (
-    <aside className="w-72 bg-white h-screen  flex flex-col p-6  border-r border-gray-100 shadow-xl shadow-gray-50/10">
+    <aside className=" bg-white-500 h-screen  flex flex-col p-6  border-r border-gray-100 shadow-xl shadow-gray-50/10">
       {/* 1. Logo Section */}
       <div className="flex items-center mb-12 gap-3">
         <div className="bg-[#EF4444] p-2 rounded-lg">
