@@ -3,7 +3,7 @@ import { ShoppingCart, Search, ChevronDown } from 'lucide-react';
 import ProductCard from '../components/Food-Drinks/ProductCard';
 import PosSummaryItem from '../components/Food-Drinks/PosSummaryItem';
 import CategoryButon from '../components/Food-Drinks/CategoryButton';
-import ConfirmPoModal from '../components/Dashboard/ConfirmPoModal';
+import ConfirmPoModal from '../components/Food-Drinks/ConfirmPoModal';
 
 export interface Product {
   id: number;
