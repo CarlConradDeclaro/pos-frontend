@@ -3,6 +3,7 @@ import { ShoppingCart, Search, ChevronDown } from 'lucide-react';
 import ProductCard from '../components/Food-Drinks/ProductCard';
 import PosSummaryItem from '../components/Food-Drinks/PosSummaryItem';
 import CategoryButon from '../components/Food-Drinks/CategoryButton';
+import ConfirmPoModal from '../components/Dashboard/ConfirmPoModal';
 
 export interface Product {
   id: number;
@@ -73,6 +74,8 @@ const PosScreen = () => {
   const [filteredProducts, setFilteredProducts] = useState<Product[]>(MOCK_PRODUCTS);
   const [activeCategory, setActiveCategory] = useState(categories[0]);
   const [poItems, setPoItems] = useState<Map<string, PurchaseOrderItem>>(new Map);
+  const [isModalActive, setIsModalActive] = useState(false);
+  const [totalItems, setTotalItems] = useState(0);
 
   const CategoryGroup = () => {
     const handleCategoryClick = (categoryName: string) => {
@@ -94,7 +97,6 @@ const PosScreen = () => {
   };
 
   const handlePoItems = (product: Product, quantity: number) => {
-    console.log('handlePoItems called');
     setPoItems((previousMap) => {
       const newMap = new Map(previousMap);
 
@@ -143,6 +145,10 @@ const PosScreen = () => {
     })
   }
 
+  const closeConfirmPoModal = () => {
+    setIsModalActive(false);
+  }
+
   useEffect(() => {
     if (activeCategory === "All") {
       setFilteredProducts(MOCK_PRODUCTS);
@@ -158,13 +164,16 @@ const PosScreen = () => {
 
   useEffect(() => {
     let subtotal = 0
+    let totalQuantity = 0;
     poItems.forEach((item, _key) => {
       subtotal += item.total;
+      totalQuantity += item.quantity;
     });
 
     setSubtotalAmount(subtotal);
     setTaxAmount(subtotalAmount * 0.05);
     setTotalAmount(subtotalAmount + taxAmount);
+    setTotalItems(totalQuantity);
   }, [poItems, subtotalAmount, taxAmount, totalAmount]);
 
 
@@ -256,10 +265,24 @@ const PosScreen = () => {
         </div>
 
         {/* Action Button */}
-        <button className="mt-6 w-full py-3 bg-green-600 text-white font-semibold rounded-lg shadow-lg hover:bg-green-700 transition-colors flex items-center justify-center">
+        <button 
+          className="mt-6 w-full py-3 bg-green-600 text-white font-semibold rounded-lg shadow-lg hover:bg-green-700 transition-colors flex items-center justify-center"
+          onClick={() => setIsModalActive(true)}
+        >
           <ShoppingCart className="w-5 h-5 mr-2" />
           Send PO to Supplier
         </button>
+
+        <ConfirmPoModal
+          isOpen={isModalActive}
+          onCloseFunc={closeConfirmPoModal}
+          // NOTE: Temporary values, will be changed on actual implementation
+          onConfirmFunc={closeConfirmPoModal}
+          poNumber='PO-2025-00128'
+          supplierName='Metro Meats Inc.'
+          totalItems={totalItems}
+          totalAmount={totalAmount}
+        />
       </div>
 
     </div >
