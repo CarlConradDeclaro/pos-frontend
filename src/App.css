@@ -1,53 +1,8 @@
-/* #root {
-  max-width: 1280px;
-  margin: 0 auto;
-  padding: 2rem;
-  text-align: center;
-}
-
-.logo {
-  height: 6em;
-  padding: 1.5em;
-  will-change: filter;
-  transition: filter 300ms;
-}
-
-.logo:hover {
-  filter: drop-shadow(0 0 2em #646cffaa);
-}
-
-.logo.react:hover {
-  filter: drop-shadow(0 0 2em #61dafbaa);
-}
-
-@keyframes logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
-}
-
-@media (prefers-reduced-motion: no-preference) {
-  a:nth-of-type(2) .logo {
-    animation: logo-spin infinite 20s linear;
-  }
-}
-
-.card {
-  padding: 2em;
-}
-
-.read-the-docs {
-  color: #888;
-} */
-
 /* General Layout */
 .dashboard {
   min-height: 100vh;
   padding: 20px;
-  font-family: 'Inter', sans-serif;
+  font-family: "Inter", sans-serif;
   color: #1a1a1a;
 }
 
@@ -75,7 +30,7 @@
   border-radius: 30px;
   display: flex;
   gap: 20px;
- box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
 }
 
 .time-nav span {
@@ -103,7 +58,7 @@
   background: white;
   border-radius: 24px;
   padding: 24px;
-  box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
   display: flex;
   flex-direction: column;
 }
@@ -165,7 +120,7 @@
 .tooltip-dot {
   width: 10px;
   height: 10px;
-  background: #D32F2F;
+  background: #d32f2f;
   border: 2px solid white;
   border-radius: 50%;
   position: absolute;
@@ -208,11 +163,7 @@
   height: 100%;
   border-radius: 50%;
   /* Conic Gradient creates the donut segments: Red, Yellow, Black */
-  background: conic-gradient(
-    #D32F2F 0% 65%, 
-    #FBC02D 65% 85%, 
-    #000 85% 100%
-  );
+  background: conic-gradient(#d32f2f 0% 65%, #fbc02d 65% 85%, #000 85% 100%);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -249,9 +200,15 @@
   display: inline-block;
   margin-right: 5px;
 }
-.dot.red { background: #D32F2F; }
-.dot.yellow { background: #FBC02D; }
-.dot.black { background: #000; }
+.dot.red {
+  background: #d32f2f;
+}
+.dot.yellow {
+  background: #fbc02d;
+}
+.dot.black {
+  background: #000;
+}
 
 /* Right Column Stats */
 .stats-column {
@@ -281,8 +238,14 @@
   justify-content: center;
   font-size: 14px;
 }
-.red-icon { background: #ffebee; color: #D32F2F; }
-.yellow-icon { background: #fffde7; color: #FBC02D; }
+.red-icon {
+  background: #ffebee;
+  color: #d32f2f;
+}
+.yellow-icon {
+  background: #fffde7;
+  color: #fbc02d;
+}
 
 .stat-info {
   text-align: right;
@@ -290,10 +253,22 @@
   flex-direction: column;
 }
 
-.stat-title { font-size: 12px; color: #888; font-weight: 600; }
-.stat-perc { font-size: 11px; font-weight: 700; margin-top: 2px; }
-.stat-perc.negative { color: #D32F2F; }
-.stat-perc.positive { color: #388E3C; }
+.stat-title {
+  font-size: 12px;
+  color: #888;
+  font-weight: 600;
+}
+.stat-perc {
+  font-size: 11px;
+  font-weight: 700;
+  margin-top: 2px;
+}
+.stat-perc.negative {
+  color: #d32f2f;
+}
+.stat-perc.positive {
+  color: #388e3c;
+}
 
 .stat-value {
   font-size: 28px;
@@ -307,13 +282,24 @@
   background: #eee;
   border-radius: 2px;
 }
-.fill { height: 100%; border-radius: 2px; }
-.red-fill { background: #D32F2F; }
-.yellow-fill { background: #FBC02D; }
+.fill {
+  height: 100%;
+  border-radius: 2px;
+}
+.red-fill {
+  background: #d32f2f;
+}
+.yellow-fill {
+  background: #fbc02d;
+}
 
 /* Bottom Lists */
-.trending-dishes { grid-column: span 1.5; } /* Span correction handled in media query logic below or generic grid */
-.best-employees { grid-column: span 1.5; }
+.trending-dishes {
+  grid-column: span 1.5;
+} /* Span correction handled in media query logic below or generic grid */
+.best-employees {
+  grid-column: span 1.5;
+}
 
 /* Bottom Row Specific Grid Adjustments */
 /* We need to span the items properly. 
@@ -326,8 +312,12 @@
    Row 1: 3 items.
    Row 2: 2 items.
 */
-.trending-dishes { grid-column: 1 / 3; } /* Spans first 2 cols */
-.best-employees { grid-column: 3 / 4; } /* Spans last col? Too small. */
+.trending-dishes {
+  grid-column: 1 / 3;
+} /* Spans first 2 cols */
+.best-employees {
+  grid-column: 3 / 4;
+} /* Spans last col? Too small. */
 
 /* CORRECTING THE GRID FOR BOTTOM ROW VISUALS */
 /* Actually, let's change the .dashboard-grid to a simpler 2-column layout for the bottom row. */
@@ -337,11 +327,21 @@
   gap: 20px;
 }
 
-.daily-sales { grid-column: span 2; }
-.total-income { grid-column: span 1; }
-.stats-column { grid-column: span 1; }
-.trending-dishes { grid-column: span 2; }
-.best-employees { grid-column: span 2; }
+.daily-sales {
+  grid-column: span 2;
+}
+.total-income {
+  grid-column: span 1;
+}
+.stats-column {
+  grid-column: span 1;
+}
+.trending-dishes {
+  grid-column: span 2;
+}
+.best-employees {
+  grid-column: span 2;
+}
 
 /* List Styles */
 .list-header {
@@ -403,8 +403,14 @@
   width: fit-content;
   margin-bottom: 2px;
 }
-.tag.food { background: #FFF8E1; color: #FBC02D; }
-.tag.drinks { background: #E1F5FE; color: #039BE5; }
+.tag.food {
+  background: #fff8e1;
+  color: #fbc02d;
+}
+.tag.drinks {
+  background: #e1f5fe;
+  color: #039be5;
+}
 
 .item-name {
   font-weight: 600;
