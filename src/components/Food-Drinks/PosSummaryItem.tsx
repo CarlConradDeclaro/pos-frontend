@@ -32,7 +32,7 @@ const PosSummaryItem = ({ purchaseOrderItem, handleDeleteItem }: PosSummaryItemP
           onClick={() => handleDeleteItem(name)}
           className="bg-white text-red-400 hover:text-red-500 cursor-pointer border-none"
         >
-          <Trash2 />
+          <Trash2 size={"1rem"}/>
         </button>
       </div>
     </div>

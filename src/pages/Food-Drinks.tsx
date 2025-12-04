@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { ShoppingCart, Search, ChevronDown } from 'lucide-react';
+import { ShoppingCart, Search } from 'lucide-react';
 import ProductCard from '../components/Food-Drinks/ProductCard';
 import PosSummaryItem from '../components/Food-Drinks/PosSummaryItem';
 import CategoryButon from '../components/Food-Drinks/CategoryButton';
@@ -125,6 +125,7 @@ const PosScreen = () => {
             name: product.name,
             quantity: quantity,
             total: product.price * quantity,
+            // NOTE: Temporary
             imageUrl: "https://upload.wikimedia.org/wikipedia/commons/b/be/Burger_King_Angus_Bacon_%26_Cheese_Steak_Burger.jpg",
             imageAlt: product.name
           })
@@ -135,8 +136,7 @@ const PosScreen = () => {
     })
   }
 
-  // Function for deleting a POS Item using the delete button
-  // TODO: Make the product in the grid reflect to zero
+  // For deleting a POS Item using the delete button
   const handleDeletePosItem = (product: string) => {
     setPoItems((previous) => {
       const newMap = new Map(previous);
@@ -199,12 +199,13 @@ const PosScreen = () => {
           </div>
         </div>
 
+        {/* NOTE: TBD if it will be in the system */}
         {/* Supplier Dropdown and Search */}
-        <div className="flex items-center w-full border border-gray-300 rounded-lg p-3 cursor-pointer hover:border-gray-400 transition-colors mb-6">
-          <ShoppingCart className="h-5 text-gray-500 mr-3 flex-shrink-0" />
-          <span className="text-gray-800 font-medium">Metro Meats Inc.</span>
-          <ChevronDown className="h-4 text-gray-500 ml-auto" />
-        </div>
+        {/* <div className="flex items-center w-full border border-gray-300 rounded-lg p-3 cursor-pointer hover:border-gray-400 transition-colors mb-6"> */}
+        {/*   <ShoppingCart className="h-5 text-gray-500 mr-3 flex-shrink-0" /> */}
+        {/*   <span className="text-gray-800 font-medium">Metro Meats Inc.</span> */}
+        {/*   <ChevronDown className="h-4 text-gray-500 ml-auto" /> */}
+        {/* </div> */}
 
 
         {/* Category Tabs */}
