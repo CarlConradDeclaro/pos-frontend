@@ -1,4 +1,3 @@
-import { useState, useEffect, useRef } from "react";
 import { type Product } from "../../pages/Food-Drinks";
 
 interface ProductProps {

@@ -149,19 +149,26 @@ const PosScreen = () => {
     setIsModalActive(false);
   }
 
+  // For filtering the products based on the clicked category and searchbar
   useEffect(() => {
-    if (activeCategory === "All") {
-      setFilteredProducts(MOCK_PRODUCTS);
-      return;
+    let newFilteredProducts = MOCK_PRODUCTS;
+    if (activeCategory !== "All") {
+      newFilteredProducts = MOCK_PRODUCTS.filter((product) => {
+        return product.category === activeCategory
+      });
     }
-
-    const newFilteredProducts = MOCK_PRODUCTS.filter((product) => {
-      return product.category === activeCategory
-    })
-
+    if (searchedWord.trim() !== "") {
+      const lowerCaseSearch = searchedWord.toLowerCase();
+      console.log(`lowercase searchword: ${lowerCaseSearch}`);
+      
+      newFilteredProducts = MOCK_PRODUCTS.filter((product) => {
+        return product.name.toLowerCase().includes(lowerCaseSearch);
+      });
+    }
     setFilteredProducts(newFilteredProducts);
-  }, [activeCategory]);
+  }, [activeCategory, searchedWord]);
 
+  // For updating the subtotal, tax, and total amount when POS Items change
   useEffect(() => {
     let subtotal = 0
     let totalQuantity = 0;
