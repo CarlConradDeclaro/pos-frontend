@@ -211,13 +211,14 @@ const PosScreen = () => {
         <CategoryGroup />
 
         {/* Product Grid */}
-        <div className="grid grid-cols-4 gap-6 overflow-y-auto pr-2">
+        <div className="w-full grid grid-cols-4 gap-6 overflow-y-auto pr-2">
           {filteredProducts.map((product) => (
             <ProductCard
               key={product.id}
               product={product}
               imageLink={`https://upload.wikimedia.org/wikipedia/commons/b/be/Burger_King_Angus_Bacon_%26_Cheese_Steak_Burger.jpg`}
               imageAlternative={product.name}
+              currentQuantity={poItems.get(product.name)?.quantity || 0}
               handlePoItems={handlePoItems}
             />
           ))}
@@ -233,7 +234,7 @@ const PosScreen = () => {
         {/* List of PO Items */}
         {poItems.size > 0 ?
           (
-            <div className="flex-grow overflow-y-auto pr-2 mb-6">
+            <div className="flex-grow overflow-y-scroll pr-2 mb-6">
               {[...poItems.values()].map((item) => (
                 <PosSummaryItem
                   key={item.id}
