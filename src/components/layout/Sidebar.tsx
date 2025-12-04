@@ -5,6 +5,7 @@ import {
   UtensilsCrossed,
   MessageSquare,
   Receipt,
+  ScrollText,
   Settings,
   Mail,
   HelpCircle,
@@ -46,8 +47,8 @@ const MAIN_MENU_ITEMS: MenuItem[] = [
     label: "Food & Drinks",
     href: "/food-drinks",
   },
-  { icon: MessageSquare, label: "Purchase Orders", href: "" },
-  { icon: Receipt, label: "Bills", href: "" },
+  { icon: ScrollText, label: "Purchase Orders", href: "/purchase-orders" },
+
   { icon: Settings, label: "Settings", href: "" },
 ];
 
@@ -65,7 +66,7 @@ const SidebarItem: React.FC<{ item: MenuItem }> = ({ item }) => {
     <Link
       to={item.href}
       className={cn(
-        "flex items-center p-3 mb-2 rounded-xl cursor-pointer transition-colors duration-200 font-medium text-[#1F2937] hover:text-dark hover:shadow-sm",
+        "w-[200px] flex items-center p-3 mb-2 rounded-xl cursor-pointer transition-colors duration-200 font-medium text-[#1F2937] hover:text-dark hover:shadow-sm",
         pathname === item.href
           ? "bg-[#FFC107] text-[#1F2937] shadow-md hover:bg-[#FFC107]"
           : "text-[#1F2937]/80 hover:bg-gray-100"
@@ -90,7 +91,7 @@ const SidebarItem: React.FC<{ item: MenuItem }> = ({ item }) => {
 // --- MAIN COMPONENT: Sidebar ---
 function Sidebar() {
   return (
-    <aside className=" bg-white-500 h-screen  flex flex-col p-6  border-r border-gray-100 shadow-xl shadow-gray-50/10">
+    <div className=" bg-white-500 h-screen  flex flex-col p-6  border-r border-gray-100 shadow-xl shadow-gray-50/10">
       {/* 1. Logo Section */}
       <div className="flex items-center mb-12 gap-3">
         <div className="bg-[#EF4444] p-2 rounded-lg">
@@ -143,7 +144,7 @@ function Sidebar() {
       <p className="text-center text-[#9CA3AF] text-xs mt-6">
         © 2020 SmartPOS App
       </p>
-    </aside>
+    </div>
   );
 }
 

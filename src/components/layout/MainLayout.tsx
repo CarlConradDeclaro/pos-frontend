@@ -4,11 +4,12 @@ import Sidebar from "./Sidebar";
 
 export default function MainLayout() {
   return (
-    <div className="flex ">
+    <div className="flex w-full min-h-screen  ">
       <Sidebar />
-      <div className="">
+
+      <div className="flex-1 flex flex-col">
         <Header />
-        <div className="">
+        <div className="p-4 ">
           <Outlet />
         </div>
       </div>
