@@ -13,7 +13,7 @@ const PosSummaryItem = ({ purchaseOrderItem, handleDeleteItem }: PosSummaryItemP
     <div className="flex items-center justify-between py-2 border-b last:border-b-0">
       <div className="flex items-center">
         {/* Image Placeholder */}
-        <div className="w-10 h-10 bg-gray-200 rounded-md mr-3 flex-shrink-0">
+        <div className="w-10 h-10 bg-none rounded-md mr-3 flex-shrink-0">
           <img src={imageUrl} alt={name} />
           {/* <div className="w-full h-full flex items-center justify-center text-xs text-gray-500"> */}
           {/*   [Image] */}
@@ -32,7 +32,7 @@ const PosSummaryItem = ({ purchaseOrderItem, handleDeleteItem }: PosSummaryItemP
           onClick={() => handleDeleteItem(name)}
           className="bg-white text-red-400 hover:text-red-500 cursor-pointer border-none"
         >
-          <Trash2 />
+          <Trash2 size={"1rem"}/>
         </button>
       </div>
     </div>
