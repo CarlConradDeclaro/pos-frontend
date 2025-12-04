@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { ShoppingCart, Search, ChevronDown } from 'lucide-react';
+import { ShoppingCart, Search } from 'lucide-react';
 import ProductCard from '../components/Food-Drinks/ProductCard';
 import PosSummaryItem from '../components/Food-Drinks/PosSummaryItem';
 import CategoryButon from '../components/Food-Drinks/CategoryButton';
@@ -125,6 +125,7 @@ const PosScreen = () => {
             name: product.name,
             quantity: quantity,
             total: product.price * quantity,
+            // NOTE: Temporary
             imageUrl: "https://upload.wikimedia.org/wikipedia/commons/b/be/Burger_King_Angus_Bacon_%26_Cheese_Steak_Burger.jpg",
             imageAlt: product.name
           })
@@ -135,8 +136,7 @@ const PosScreen = () => {
     })
   }
 
-  // Function for deleting a POS Item using the delete button
-  // TODO: Make the product in the grid reflect to zero
+  // For deleting a POS Item using the delete button
   const handleDeletePosItem = (product: string) => {
     setPoItems((previous) => {
       const newMap = new Map(previous);
@@ -149,19 +149,26 @@ const PosScreen = () => {
     setIsModalActive(false);
   }
 
+  // For filtering the products based on the clicked category and searchbar
   useEffect(() => {
-    if (activeCategory === "All") {
-      setFilteredProducts(MOCK_PRODUCTS);
-      return;
+    let newFilteredProducts = MOCK_PRODUCTS;
+    if (activeCategory !== "All") {
+      newFilteredProducts = MOCK_PRODUCTS.filter((product) => {
+        return product.category === activeCategory
+      });
     }
-
-    const newFilteredProducts = MOCK_PRODUCTS.filter((product) => {
-      return product.category === activeCategory
-    })
-
+    if (searchedWord.trim() !== "") {
+      const lowerCaseSearch = searchedWord.toLowerCase();
+      console.log(`lowercase searchword: ${lowerCaseSearch}`);
+      
+      newFilteredProducts = MOCK_PRODUCTS.filter((product) => {
+        return product.name.toLowerCase().includes(lowerCaseSearch);
+      });
+    }
     setFilteredProducts(newFilteredProducts);
-  }, [activeCategory]);
+  }, [activeCategory, searchedWord]);
 
+  // For updating the subtotal, tax, and total amount when POS Items change
   useEffect(() => {
     let subtotal = 0
     let totalQuantity = 0;
@@ -199,25 +206,27 @@ const PosScreen = () => {
           </div>
         </div>
 
+        {/* NOTE: TBD if it will be in the system */}
         {/* Supplier Dropdown and Search */}
-        <div className="flex items-center w-full border border-gray-300 rounded-lg p-3 cursor-pointer hover:border-gray-400 transition-colors mb-6">
-          <ShoppingCart className="h-5 text-gray-500 mr-3 flex-shrink-0" />
-          <span className="text-gray-800 font-medium">Metro Meats Inc.</span>
-          <ChevronDown className="h-4 text-gray-500 ml-auto" />
-        </div>
+        {/* <div className="flex items-center w-full border border-gray-300 rounded-lg p-3 cursor-pointer hover:border-gray-400 transition-colors mb-6"> */}
+        {/*   <ShoppingCart className="h-5 text-gray-500 mr-3 flex-shrink-0" /> */}
+        {/*   <span className="text-gray-800 font-medium">Metro Meats Inc.</span> */}
+        {/*   <ChevronDown className="h-4 text-gray-500 ml-auto" /> */}
+        {/* </div> */}
 
 
         {/* Category Tabs */}
         <CategoryGroup />
 
         {/* Product Grid */}
-        <div className="grid grid-cols-4 gap-6 overflow-y-auto pr-2">
+        <div className="w-full grid grid-cols-4 gap-6 overflow-y-auto pr-2">
           {filteredProducts.map((product) => (
             <ProductCard
               key={product.id}
               product={product}
               imageLink={`https://upload.wikimedia.org/wikipedia/commons/b/be/Burger_King_Angus_Bacon_%26_Cheese_Steak_Burger.jpg`}
               imageAlternative={product.name}
+              currentQuantity={poItems.get(product.name)?.quantity || 0}
               handlePoItems={handlePoItems}
             />
           ))}
@@ -233,7 +242,7 @@ const PosScreen = () => {
         {/* List of PO Items */}
         {poItems.size > 0 ?
           (
-            <div className="flex-grow overflow-y-auto pr-2 mb-6">
+            <div className="flex-grow overflow-y-scroll pr-2 mb-6">
               {[...poItems.values()].map((item) => (
                 <PosSummaryItem
                   key={item.id}
@@ -247,42 +256,45 @@ const PosScreen = () => {
           )}
 
 
-        {/* Financial Breakdown */}
-        <div className="border-t border-gray-200 pt-4">
-          <div className="flex justify-between text-sm mb-1 text-gray-600">
-            <span>Sub Total</span>
-            <span>P{subtotalAmount.toFixed(2)}</span>
-          </div>
-          <div className="flex justify-between text-sm mb-4 text-gray-600">
-            <span>Tax 5%</span>
-            <span>P{taxAmount.toFixed(2)}</span>
+        <div className='mt-auto'>
+          {/* Financial Breakdown */}
+          <div className="border-t border-gray-200 pt-4">
+            <div className="flex justify-between text-sm mb-1 text-gray-600">
+              <span>Sub Total</span>
+              <span>P{subtotalAmount.toFixed(2)}</span>
+            </div>
+            <div className="flex justify-between text-sm mb-4 text-gray-600">
+              <span>Tax 5%</span>
+              <span>P{taxAmount.toFixed(2)}</span>
+            </div>
+
+            <div className="flex justify-between items-center text-lg font-bold text-gray-900 border-t pt-3">
+              <span>Total Amount</span>
+              <span>P{totalAmount.toFixed(2)}</span>
+            </div>
           </div>
 
-          <div className="flex justify-between items-center text-lg font-bold text-gray-900 border-t pt-3">
-            <span>Total Amount</span>
-            <span>P{totalAmount.toFixed(2)}</span>
-          </div>
+          {/* Action Button */}
+          <button
+            className="mt-6 w-full py-3 bg-green-600 text-white font-semibold rounded-lg shadow-lg hover:bg-green-700 transition-colors duration-50 flex items-center justify-center border-none cursor-pointer"
+            disabled={poItems.size === 0}
+            onClick={() => setIsModalActive(true)}
+          >
+            <ShoppingCart className="w-5 h-5 mr-2" />
+            Submit
+          </button>
+
+          <ConfirmPoModal
+            isOpen={isModalActive}
+            onCloseFunc={closeConfirmPoModal}
+            // NOTE: Temporary values, will be changed on actual implementation
+            onConfirmFunc={closeConfirmPoModal}
+            poNumber='PO-2025-00128'
+            supplierName='Metro Meats Inc.'
+            totalItems={totalItems}
+            totalAmount={totalAmount}
+          />
         </div>
-
-        {/* Action Button */}
-        <button 
-          className="mt-6 w-full py-3 bg-green-600 text-white font-semibold rounded-lg shadow-lg hover:bg-green-700 transition-colors flex items-center justify-center"
-          onClick={() => setIsModalActive(true)}
-        >
-          <ShoppingCart className="w-5 h-5 mr-2" />
-          Send PO to Supplier
-        </button>
-
-        <ConfirmPoModal
-          isOpen={isModalActive}
-          onCloseFunc={closeConfirmPoModal}
-          // NOTE: Temporary values, will be changed on actual implementation
-          onConfirmFunc={closeConfirmPoModal}
-          poNumber='PO-2025-00128'
-          supplierName='Metro Meats Inc.'
-          totalItems={totalItems}
-          totalAmount={totalAmount}
-        />
       </div>
 
     </div >

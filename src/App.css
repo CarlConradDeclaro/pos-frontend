@@ -103,8 +103,14 @@
   width: fit-content;
   margin-bottom: 2px;
 }
-.tag.food { background: #FFF8E1; color: #FBC02D; }
-.tag.drinks { background: #E1F5FE; color: #039BE5; }
+.tag.food {
+  background: #fff8e1;
+  color: #fbc02d;
+}
+.tag.drinks {
+  background: #e1f5fe;
+  color: #039be5;
+}
 
 .item-name {
   font-weight: 600;
