@@ -1,1 +1,1 @@
-export type POStatus = "Delivered" | "Confirmed" | "Sent" | "Draft";
+export type POStatus = "Delivered" | "Confirmed" | "Pending" | "Draft";

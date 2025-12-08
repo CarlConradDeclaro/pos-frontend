@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Search,
   Calendar,
@@ -13,11 +13,28 @@ import type { PurchaseOrder } from "../types/PurchaseOrder";
 import { initialOrders } from "../data/initialOrders";
 import type { POStatus } from "../types/Postatus";
 import { useNavigate } from "react-router-dom";
+import { formatDate } from "../utils/helper/format-date";
 
 // 1. Define Data Types
 
 const PurchaseOrders: React.FC = () => {
-  const [orders] = useState<PurchaseOrder[]>(initialOrders);
+  const [po, setPO] = useState<PurchaseOrder[] | null>(null);
+  useEffect(() => {
+    const fetchPOs = async () => {
+      try {
+        const res = await fetch("http://127.0.0.1:3000/api/purchase-orders");
+        const data = await res.json();
+        setPO(data.data);
+        console.log("data: ", data);
+      } catch (error) {
+        console.log(error);
+      }
+    };
+
+    fetchPOs();
+  }, []);
+
+  // const [orders] = useState<PurchaseOrder[]>(po);
   // Helper to render status badges with correct colors
   const getStatusStyles = (status: POStatus) => {
     switch (status) {
@@ -25,7 +42,7 @@ const PurchaseOrders: React.FC = () => {
         return "bg-green-100 text-green-700 border-green-200";
       case "Confirmed":
         return "bg-emerald-100 text-emerald-700 border-emerald-200";
-      case "Sent":
+      case "Pending":
         return "bg-blue-100 text-blue-700 border-blue-200";
       case "Draft":
         return "bg-gray-100 text-gray-600 border-gray-200";
@@ -35,7 +52,7 @@ const PurchaseOrders: React.FC = () => {
   };
   const navigate = useNavigate();
 
-  const handleViewDetail = (id: number) => {
+  const handleViewDetail = (id: string) => {
     navigate(`/po-details/${id}`);
   };
 
@@ -147,7 +164,7 @@ const PurchaseOrders: React.FC = () => {
                   </th>
                   <th className="py-4 px-6 text-sm font-semibold text-gray-500 cursor-pointer hover:bg-gray-50">
                     <div className="flex items-center gap-1">
-                      Scheduled Delivery
+                      Order Date
                       <div className="flex flex-col">
                         <ChevronUp size={10} className="text-gray-300" />
                         <ChevronDown size={10} className="text-gray-300" />
@@ -159,55 +176,58 @@ const PurchaseOrders: React.FC = () => {
               </thead>
 
               <tbody className="divide-y divide-gray-50">
-                {orders.map((order) => (
-                  <tr
-                    onClick={() => handleViewDetail(Number(order.id))}
-                    key={order.id}
-                    className="hover:bg-gray-50 transition-colors group cursor-pointer"
-                  >
-                    <td className="py-4 px-6 text-sm font-medium text-gray-900">
-                      {order.poNumber}
-                    </td>
-                    <td className="py-4 px-6 text-sm text-gray-600">
-                      {order.supplierName}
-                    </td>
-                    <td className="py-4 px-6">
-                      <span
-                        className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium border ${getStatusStyles(
-                          order.status
-                        )}`}
-                      >
-                        {order.status}
-                      </span>
-                    </td>
-                    <td className="py-4 px-6 text-sm text-gray-500 text-center">
-                      {order.totalItems} items
-                    </td>
-                    <td className="py-4 px-6 text-sm text-gray-600">
-                      {order.scheduledDelivery}
-                    </td>
-                    <td className="py-4 px-6 text-right">
-                      <button
-                        className="text-gray-400 hover:text-gray-600 p-1 rounded hover:bg-gray-100 transition-colors"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          console.log("Morehorizontal clicked");
-                        }}
-                      >
-                        <MoreHorizontal size={20} />
-                      </button>
-                    </td>
-                  </tr>
-                ))}
+                {po
+                  ?.slice()
+                  .reverse()
+                  .map((order) => (
+                    <tr
+                      onClick={() => handleViewDetail(order._id)}
+                      key={order._id}
+                      className="hover:bg-gray-50 transition-colors group cursor-pointer"
+                    >
+                      <td className="py-4 px-6 text-sm font-medium text-gray-900">
+                        {order.poNumber}
+                      </td>
+                      <td className="py-4 px-6 text-sm text-gray-600">
+                        {order.supplierName}
+                      </td>
+                      <td className="py-4 px-6">
+                        <span
+                          className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium border ${getStatusStyles(
+                            order.status
+                          )}`}
+                        >
+                          {order.status}
+                        </span>
+                      </td>
+                      <td className="py-4 px-6 text-sm text-gray-500 text-center">
+                        {order.products.length} items
+                      </td>
+                      <td className="py-4 px-6 text-sm text-gray-600">
+                        {formatDate(order.orderDate)}
+                      </td>
+                      <td className="py-4 px-6 text-right">
+                        <button
+                          className="text-gray-400 hover:text-gray-600 p-1 rounded hover:bg-gray-100 transition-colors"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            console.log("Morehorizontal clicked");
+                          }}
+                        >
+                          <MoreHorizontal size={20} />
+                        </button>
+                      </td>
+                    </tr>
+                  ))}
               </tbody>
             </table>
           </div>
 
           {/* MOBILE VIEW: Card List */}
           <div className="md:hidden flex flex-col divide-y divide-gray-100">
-            {orders.map((order) => (
+            {po?.map((order) => (
               <div
-                key={order.id}
+                key={order._id}
                 className="p-4 flex flex-col gap-3 hover:bg-gray-50 transition-colors cursor-pointer"
               >
                 <div className="flex justify-between items-start">
@@ -238,10 +258,10 @@ const PurchaseOrders: React.FC = () => {
                       <Package size={14} />
                       {order.totalItems} items
                     </div>
-                    {order.scheduledDelivery !== "-" && (
+                    {order.orderDate !== "-" && (
                       <div className="flex items-center gap-1">
                         <Clock size={14} />
-                        {order.scheduledDelivery}
+                        {formatDate(order.orderDate)}
                       </div>
                     )}
                   </div>
