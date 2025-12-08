@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   ArrowLeft,
   Download,
@@ -450,13 +450,86 @@ const PurchaseOrderDetail: React.FC<PurchaseOrderDetailProps> = ({
 
 // --- EXAMPLE USAGE WRAPPER ---
 const PurchaseOrder: React.FC = () => {
-  const { id } = useParams();
+  const { id } = useParams<{ id: string }>();
 
   const back = useNavigate();
 
+  const [order, setOrder] = useState<PurchaseOrderData | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    console.log("id is:", id);
+
+    if (!id) return;
+
+    const fetchPO = async () => {
+      try {
+        const res = await fetch(
+          `http://127.0.0.1:3000/api/purchase-orders/${id}`
+        );
+        if (!res.ok) {
+          throw new Error(`Failed to fetch PO: ${res.status}`);
+        }
+
+        const data = await res.json();
+
+        if (!data.success) {
+          throw new Error(data.message || "Failed to fetch PO");
+        }
+
+        // Transform backend PO data to match PurchaseOrderData interface
+        const backendPO = data.data;
+        const formattedPO: PurchaseOrderData = {
+          poNumber: backendPO.poNumber,
+          supplierName: backendPO.supplierName || "Unknown Supplier",
+          orderDate: new Date(backendPO.orderDate).toLocaleDateString(),
+          scheduledDelivery: backendPO.scheduledDelivery
+            ? new Date(backendPO.scheduledDelivery).toLocaleDateString()
+            : "Not Scheduled",
+          status: backendPO.status,
+          statusTimestamp: backendPO.statusTimestamp
+            ? new Date(backendPO.statusTimestamp).toLocaleString()
+            : undefined,
+          items: backendPO.products.map((p: any) => ({
+            id: p.product._id,
+            name: p.product.name,
+            quantity: String(p.quantity),
+            unitPrice: Number(p.unitPriceSnapshot),
+            total: Number(p.amount),
+          })),
+          summary: {
+            subtotal: Number(backendPO.subtotal),
+            taxRate: backendPO.tax
+              ? Number(backendPO.tax) / Number(backendPO.subtotal)
+              : 0,
+            deliveryFee: backendPO.deliveryFee
+              ? Number(backendPO.deliveryFee)
+              : 0,
+            total: Number(backendPO.total),
+          },
+          notes: backendPO.note || "",
+        };
+
+        setOrder(formattedPO);
+      } catch (err: any) {
+        console.error(err);
+        setError(err.message || "Error fetching purchase order.");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchPO();
+  }, [id]);
+
+  if (loading) return <div>Loading PO...</div>;
+  if (error) return <div className="text-red-500">{error}</div>;
+  if (!order) return <div>No Purchase Order found.</div>;
+
   return (
     <PurchaseOrderDetail
-      order={mockOrders[Number(id) - 1]}
+      order={order}
       onBack={() => back("/purchase-orders")}
       onDownload={() => console.log("Download clicked")}
       onEdit={() => console.log("Edit clicked")}
