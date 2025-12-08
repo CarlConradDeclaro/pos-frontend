@@ -15,6 +15,7 @@ import {
 } from "lucide-react";
 import { useNavigate, useParams } from "react-router-dom";
 import { mockOrders } from "../../data/initialOrders";
+import { BASEURL } from "../../utils/baseurl";
 
 // --- TYPES ---
 
@@ -465,9 +466,7 @@ const PurchaseOrder: React.FC = () => {
 
     const fetchPO = async () => {
       try {
-        const res = await fetch(
-          `http://127.0.0.1:3000/api/purchase-orders/${id}`
-        );
+        const res = await fetch(`${BASEURL}api/purchase-orders/${id}`);
         if (!res.ok) {
           throw new Error(`Failed to fetch PO: ${res.status}`);
         }

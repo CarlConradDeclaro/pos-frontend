@@ -14,6 +14,7 @@ import { initialOrders } from "../data/initialOrders";
 import type { POStatus } from "../types/Postatus";
 import { useNavigate } from "react-router-dom";
 import { formatDate } from "../utils/helper/format-date";
+import { BASEURL } from "../utils/baseurl";
 
 // 1. Define Data Types
 
@@ -22,7 +23,7 @@ const PurchaseOrders: React.FC = () => {
   useEffect(() => {
     const fetchPOs = async () => {
       try {
-        const res = await fetch("http://127.0.0.1:3000/api/purchase-orders");
+        const res = await fetch(`${BASEURL}api/purchase-orders`);
         const data = await res.json();
         setPO(data.data);
         console.log("data: ", data);
