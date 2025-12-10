@@ -11,6 +11,7 @@ import {
   HelpCircle,
   Briefcase,
   Store,
+  Archive,
 } from "lucide-react";
 
 // --- UTILITY FUNCTION (Simplified cn) ---
@@ -46,6 +47,11 @@ const MAIN_MENU_ITEMS: MenuItem[] = [
     icon: UtensilsCrossed,
     label: "Food & Drinks",
     href: "/food-drinks",
+  },
+  {
+    icon: Archive,
+    label: "Resupply",
+    href: "/resupply"
   },
   { icon: ScrollText, label: "Purchase Orders", href: "/purchase-orders" },
 

@@ -1,4 +1,4 @@
-import { type Product } from "../../pages/Food-Drinks";
+import type { Product } from "../../types/Product";
 
 interface ProductProps {
   product: Product;
@@ -24,7 +24,7 @@ const ProductCard = ({ product, imageLink, imageAlternative, currentQuantity, ha
       {/* Product Info */}
       <h3 className="font-semibold text-gray-800 text-nowrap overflow-x-scroll">{product.name}</h3>
       <p className="text-sm text-gray-500 mb-3">
-        P{product.price}{product.unit}
+        P{product.price}/{product.unit}
       </p>
 
       <div className="flex justify-between items-center bg-green-100 text-green-500 border border-green-100 rounded-xl">
