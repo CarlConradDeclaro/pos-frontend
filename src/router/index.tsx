@@ -4,6 +4,7 @@ import Dashboard from "../pages/Dashboard";
 import FoodDrinks from "../pages/Food-Drinks";
 import PurchaseOrders from "../pages/Purchase-Orders";
 import PurchaseOrder from "../components/Purchase-orders/po-details";
+import ResupplyPage from "../pages/Resupply";
 
 export default function Router() {
   return (
@@ -13,6 +14,7 @@ export default function Router() {
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/food-drinks" element={<FoodDrinks />} />
           <Route path="/purchase-orders" element={<PurchaseOrders />} />
+          <Route path="/resupply" element={<ResupplyPage />} />
 
           <Route path="/po-details/:id" element={<PurchaseOrder />} />
         </Route>

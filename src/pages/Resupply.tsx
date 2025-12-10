@@ -4,18 +4,20 @@ import ProductCard from '../components/Food-Drinks/ProductCard';
 import PosSummaryItem from '../components/Food-Drinks/PosSummaryItem';
 import CategoryButon from '../components/Food-Drinks/CategoryButton';
 import ConfirmPoModal from '../components/Food-Drinks/ConfirmPoModal';
-import MOCK_PRODUCTS from '../data/mockProducts';
 import type { Product } from '../types/Product';
 import type { PurchaseOrderItem } from '../types/PurchaseOrderItem';
+import * as mock from "../data/mockMerchantProducts";
 
-const categories = ['All', 'Ulam', 'Silog', 'Sisig', 'Drinks', 'Dessert'];
+const categories = ["All", "Grains & Staples", "Meat & Poultry", "Seafood", "Dairy", "Fruits", "Vegetables", "Oils & Fats", "Spices & Condiments", "Beverages", "Frozen & Ready-to-Cook"];
 
-const PosScreen = () => {
+const ResupplyPage = () => {
+  const [mockMerchantProducts, setMockMerchantProducts] = useState(mock.MOCK_GRAIN_PRODUCTS);
+  const [selectedMerchant, setSelectedMerchant] = useState("Golden Grain Suppliers");
   const [subtotalAmount, setSubtotalAmount] = useState(0.00);
   const [taxAmount, setTaxAmount] = useState(0.00);
   const [totalAmount, setTotalAmount] = useState(0.00);
   const [searchedWord, setSearchedWord] = useState("");
-  const [filteredProducts, setFilteredProducts] = useState<Product[]>(MOCK_PRODUCTS);
+  const [filteredProducts, setFilteredProducts] = useState<Product[]>(mock.MOCK_GRAIN_PRODUCTS);
   const [activeCategory, setActiveCategory] = useState(categories[0]);
   const [poItems, setPoItems] = useState<Map<string, PurchaseOrderItem>>(new Map);
   const [isModalActive, setIsModalActive] = useState(false);
@@ -27,7 +29,7 @@ const PosScreen = () => {
     }
 
     return (
-      <div className="flex space-x-2 mb-6 pb-2">
+      <div className="max-w-3xl flex flex-shrink-0 overflow-x-scroll space-x-2 mb-6 p-4">
         {categories.map((category) => (
           <CategoryButon
             key={category}
@@ -95,22 +97,55 @@ const PosScreen = () => {
 
   // For filtering the products based on the clicked category and searchbar
   useEffect(() => {
-    let newFilteredProducts = MOCK_PRODUCTS;
+    let newFilteredProducts = mockMerchantProducts;
     if (activeCategory !== "All") {
-      newFilteredProducts = MOCK_PRODUCTS.filter((product) => {
+      newFilteredProducts = mockMerchantProducts.filter((product) => {
         return product.category === activeCategory
       });
     }
     if (searchedWord.trim() !== "") {
       const lowerCaseSearch = searchedWord.toLowerCase();
       console.log(`lowercase searchword: ${lowerCaseSearch}`);
-      
-      newFilteredProducts = MOCK_PRODUCTS.filter((product) => {
+
+      newFilteredProducts = mockMerchantProducts.filter((product) => {
         return product.name.toLowerCase().includes(lowerCaseSearch);
       });
     }
     setFilteredProducts(newFilteredProducts);
-  }, [activeCategory, searchedWord]);
+  }, [activeCategory, searchedWord, mockMerchantProducts]);
+
+  useEffect(() => {
+    if (confirm("Go to a different merchant? This will clear out your cart")) {
+      switch (selectedMerchant) {
+        case "Golden Grain Suppliers":
+          setMockMerchantProducts(mock.MOCK_GRAIN_PRODUCTS);
+          break;
+        case "FreshHarvest Co.":
+          setMockMerchantProducts(mock.MOCK_FRUIT_PRODUCTS);
+          break;
+        case "Ocean Bounty Seafood":
+          setMockMerchantProducts(mock.MOCK_SEAFOOD_PRODUCTS);
+          break;
+        case "Dairy Delight Inc.":
+          setMockMerchantProducts(mock.MOCK_DAIRY_PRODUCTS);
+          break;
+        case "GreenLeaf Produce":
+          setMockMerchantProducts(mock.MOCK_VEGETABLE_PRODUCTS);
+          break;
+        case "Sunflower Spices":
+          setMockMerchantProducts(mock.MOCK_SPICE_PRODUCTS);
+          break;
+        case "PureEssence Oils":
+          setMockMerchantProducts(mock.MOCK_OIL_PRODUCTS);
+          break;
+        default:
+          setMockMerchantProducts([]);
+      }
+      setPoItems(new Map());
+    }
+
+  }, [selectedMerchant])
+
 
   // For updating the subtotal, tax, and total amount when POS Items change
   useEffect(() => {
@@ -151,12 +186,28 @@ const PosScreen = () => {
         </div>
 
         {/* NOTE: TBD if it will be in the system */}
-        {/* Supplier Dropdown and Search */}
-        {/* <div className="flex items-center w-full border border-gray-300 rounded-lg p-3 cursor-pointer hover:border-gray-400 transition-colors mb-6"> */}
-        {/*   <ShoppingCart className="h-5 text-gray-500 mr-3 flex-shrink-0" /> */}
-        {/*   <span className="text-gray-800 font-medium">Metro Meats Inc.</span> */}
-        {/*   <ChevronDown className="h-4 text-gray-500 ml-auto" /> */}
-        {/* </div> */}
+        {/* Supplier Dropdown */}
+        <div className="flex items-center w-full border border-gray-300 rounded-lg cursor-pointer p-0.5 hover:border-gray-400 transition-colors mb-6">
+          <ShoppingCart className="h-5 text-gray-500 mx-3 flex-shrink-0" />
+          <select
+            name="supplier-select"
+            id="supplier-select"
+            className="bg-white w-full h-full cursor-pointer p-3"
+            onChange={(e) => {
+              console.log(`selected value: ${e.target.value}`);
+              setSelectedMerchant(e.target.value)
+            }}
+          >
+            <option value="Golden Grain Suppliers">Golden Grain Suppliers</option>
+            <option value="FreshHarvest Co.">Fresh Harvest Co.</option>
+            <option value="Ocean Bounty Seafood">Ocean Bounty Seafood</option>
+            <option value="Dairy Delight Inc.">Dairy Delight Inc.</option>
+            <option value="GreenLeaf Produce">GreenLeaf Produce</option>
+            <option value="Sunflower Spices">Sunflower Spices</option>
+            <option value="PureEssence Oils">PureEssence Oils</option>
+          </select>
+          {/* <ChevronDown className="h-4 text-gray-500 ml-auto" /> */}
+        </div>
 
 
         {/* Category Tabs */}
@@ -245,4 +296,4 @@ const PosScreen = () => {
   );
 };
 
-export default PosScreen;
+export default ResupplyPage;
