@@ -22,7 +22,7 @@ const ProductCard = ({ product, imageLink, imageAlternative, currentQuantity, ha
       </div>
 
       {/* Product Info */}
-      <h3 className="font-semibold text-gray-800 text-nowrap overflow-x-scroll">{product.name}</h3>
+      <h3 className="font-semibold text-gray-800 text-nowrap">{product.name}</h3>
       <p className="text-sm text-gray-500 mb-3">
         P{product.price}/{product.unit}
       </p>
