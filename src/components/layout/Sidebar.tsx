@@ -11,6 +11,14 @@ import {
   HelpCircle,
   Briefcase,
   Store,
+  BadgeRussianRuble,
+} from "lucide-react";
+import {
+  Warehouse,
+  ShoppingBasket,
+  SquareMenu,
+  Container,
+  History,
 } from "lucide-react";
 
 // --- UTILITY FUNCTION (Simplified cn) ---
@@ -43,11 +51,41 @@ const MAIN_MENU_ITEMS: MenuItem[] = [
     href: "/dashboard",
   },
   {
-    icon: UtensilsCrossed,
-    label: "Food & Drinks",
+    icon: BadgeRussianRuble,
+    label: "Sales",
+    href: "/sales",
+  },
+  {
+    icon: SquareMenu,
+    label: "Menu Selection",
     href: "/food-drinks",
   },
-  { icon: ScrollText, label: "Purchase Orders", href: "/purchase-orders" },
+  {
+    icon: ShoppingBasket,
+    label: "Orders",
+    href: "/orders",
+  },
+  // { icon: ScrollText, label: "Purchase Orders", href: "/purchase-orders" },
+  {
+    icon: Warehouse,
+    label: "Inventory",
+    href: "/inventory",
+  },
+  {
+    icon: Container,
+    label: "Restock",
+    href: "/supplier-orders",
+  },
+  {
+    icon: History,
+    label: "Supplier Orders History",
+    href: "/supplier-orders-history",
+  },
+  {
+    icon: Warehouse,
+    label: "Menu & Recipes",
+    href: "/menu-recipes",
+  },
 
   { icon: Settings, label: "Settings", href: "" },
 ];
