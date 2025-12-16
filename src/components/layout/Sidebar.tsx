@@ -11,6 +11,7 @@ import {
   HelpCircle,
   Briefcase,
   Store,
+  BadgeRussianRuble,
 } from "lucide-react";
 import {
   Warehouse,
@@ -48,6 +49,11 @@ const MAIN_MENU_ITEMS: MenuItem[] = [
     icon: LayoutDashboard,
     label: "Dashboard",
     href: "/dashboard",
+  },
+  {
+    icon: BadgeRussianRuble,
+    label: "Sales",
+    href: "/sales",
   },
   {
     icon: SquareMenu,
