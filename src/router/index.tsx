@@ -20,7 +20,6 @@ export default function Router() {
           <Route path="/orders" element={<Orders />} />
           <Route path="/inventory" element={<Inventory />} />
           <Route path="/supplier-orders" element={<Restock />} />
-
           <Route
             path="/supplier-orders-history"
             element={<SupplyOrderHistory />}

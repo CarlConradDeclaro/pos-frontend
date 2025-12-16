@@ -1,6 +1,7 @@
 import { type Product } from "../../pages/Food-Drinks";
 
 interface ProductProps {
+  style: string;
   product: Product;
   imageLink: string;
   imageAlternative: string;
@@ -8,29 +9,54 @@ interface ProductProps {
   handlePoItems: (product: Product, quantity: number) => void;
 }
 
-const ProductCard = ({ product, imageLink, imageAlternative, currentQuantity, handlePoItems }: ProductProps) => {
+const ProductCard = ({
+  style,
+  product,
+  imageLink,
+  imageAlternative,
+  currentQuantity,
+  handlePoItems,
+}: ProductProps) => {
   const isActive = currentQuantity > 0;
 
   const handleUpdateQuantity = (newQuantity: number) => {
     handlePoItems(product, newQuantity);
-  }
+  };
 
   return (
-    <div className={`p-3 bg-white border rounded-lg transition-colors duration-50 shadow-sm ${isActive ? 'border-green-500' : 'border-gray-200'}`}>
+    <div
+      className={`${style} p-3 bg-white border rounded-lg transition-colors duration-50 shadow-sm ${
+        isActive ? "border-green-500" : "border-gray-200"
+      }`}
+    >
       <div className="aspect-square rounded-md overflow-hidden mb-3 flex items-center justify-center">
         <img src={imageLink} alt={imageAlternative} />
       </div>
 
-      {/* Product Info */}
-      <h3 className="font-semibold text-gray-800 text-nowrap overflow-x-scroll">{product.name}</h3>
+      {/* Product Info - FIX APPLIED HERE */}
+      <h3
+        className="font-semibold text-gray-800 h-10 overflow-hidden"
+        style={{
+          display: "-webkit-box",
+          WebkitLineClamp: 2, // Limit to 2 lines
+          WebkitBoxOrient: "vertical",
+        }}
+      >
+        {product.name}
+      </h3>
       <p className="text-sm text-gray-500 mb-3">
-        P{product.price}{product.unit}
+        P{product.price}
+        {product.unit}
       </p>
 
       <div className="flex justify-between items-center bg-green-100 text-green-500 border border-green-100 rounded-xl">
         <button
           className="px-5 py-1 text-xl font-bold bg-inherit transition-opacity hover:opacity-75 border-none"
-          onClick={() => { if (currentQuantity > 0) { handleUpdateQuantity(currentQuantity - 1) } }}
+          onClick={() => {
+            if (currentQuantity > 0) {
+              handleUpdateQuantity(currentQuantity - 1);
+            }
+          }}
         >
           -
         </button>
@@ -59,7 +85,6 @@ const ProductCard = ({ product, imageLink, imageAlternative, currentQuantity, ha
           +
         </button>
       </div>
-
     </div>
   );
 };
