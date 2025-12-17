@@ -9,6 +9,7 @@ import Inventory from "../pages/inventory";
 import Restock from "../pages/restock";
 import SupplyOrderHistory from "../pages/supply-order-history";
 import MenuRecipe from "../pages/menu-recipe";
+import SalesOverview from "../components/sales/sales";
 
 export default function Router() {
   return (
@@ -30,6 +31,7 @@ export default function Router() {
           {/* <Route path="/purchase-orders" element={<PurchaseOrders />} /> */}
 
           <Route path="/po-details/:id" element={<PurchaseOrder />} />
+          <Route path="/sales" element={<SalesOverview/>} />
         </Route>
       </Routes>
     </BrowserRouter>
