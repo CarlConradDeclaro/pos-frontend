@@ -136,9 +136,12 @@ const CustomerOrders: React.FC = () => {
   useEffect(() => {
     const fetchOrders = async () => {
       try {
-        const result = await fetch("http://localhost:3000/api/product-orders/", {
-          method: "GET",
-        })
+        const result = await fetch(
+          "https://smartpos-bckd-production.up.railway.app/api/product-orders/",
+          {
+            method: "GET",
+          }
+        );
         const data = await result.json();
 
         if (!result.ok) {
@@ -160,19 +163,22 @@ const CustomerOrders: React.FC = () => {
           console.log("order date: ", orderDate);
           console.log("order time: ", orderTime);
           setOrdersData((previous) => {
-            return [...previous, {
-              _id: order._id,
-              status: order.status,
-              total: Number(order.total['$numberDecimal']),
-              date: orderDate,
-              time: orderTime
-            }]
-          })
+            return [
+              ...previous,
+              {
+                _id: order._id,
+                status: order.status,
+                total: Number(order.total["$numberDecimal"]),
+                date: orderDate,
+                time: orderTime,
+              },
+            ];
+          });
         });
       } catch (err) {
         console.error(err);
       }
-    }
+    };
 
     fetchOrders();
   }, []);
@@ -220,10 +226,11 @@ const CustomerOrders: React.FC = () => {
             <button
               key={tab}
               onClick={() => setActiveTab(tab)}
-              className={`px-3 py-2 font-mediumtext-sm rounded-md whitespace-nowrap ${activeTab === tab
-                ? "bg-green-500 text-white"
-                : "text-gray-500 hover:text-gray-700 hover:bg-gray-100"
-                }`}
+              className={`px-3 py-2 font-mediumtext-sm rounded-md whitespace-nowrap ${
+                activeTab === tab
+                  ? "bg-green-500 text-white"
+                  : "text-gray-500 hover:text-gray-700 hover:bg-gray-100"
+              }`}
             >
               {tab}
             </button>
