@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   FiSearch,
   FiFilter,
@@ -9,58 +9,58 @@ import {
 
 // Define the Order interface
 export interface Order {
-  id: string;
+  _id: string;
   date: string;
   time: string;
   status: "Preparing" | "Ready" | "Completed" | "Pending" | "Canceled";
-  amount: number;
+  total: number;
 }
 
 // Sample data based on the image
-const ordersData: Order[] = [
-  {
-    id: "#ORD-089",
-    date: "Today",
-    time: "10:42 AM",
-    status: "Preparing",
-    amount: 45.5,
-  },
-  {
-    id: "#ORD-088",
-    date: "Today",
-    time: "10:15 AM",
-    status: "Ready",
-    amount: 128.0,
-  },
-  {
-    id: "#ORD-087",
-    date: "Today",
-    time: "09:55 AM",
-    status: "Completed",
-    amount: 24.9,
-  },
-  {
-    id: "#ORD-086",
-    date: "Yesterday",
-    time: "08:30 PM",
-    status: "Pending",
-    amount: 65.2,
-  },
-  {
-    id: "#ORD-085",
-    date: "Yesterday",
-    time: "07:45 PM",
-    status: "Canceled",
-    amount: 15.0,
-  },
-  {
-    id: "#ORD-084",
-    date: "Yesterday",
-    time: "06:20 PM",
-    status: "Completed",
-    amount: 89.5,
-  },
-];
+// const ordersData: Order[] = [
+//   {
+//     _id: "#ORD-089",
+//     date: "Today",
+//     time: "10:42 AM",
+//     status: "Preparing",
+//     total: 45.5,
+//   },
+//   {
+//     _id: "#ORD-088",
+//     date: "Today",
+//     time: "10:15 AM",
+//     status: "Ready",
+//     total: 128.0,
+//   },
+//   {
+//     _id: "#ORD-087",
+//     date: "Today",
+//     time: "09:55 AM",
+//     status: "Completed",
+//     total: 24.9,
+//   },
+//   {
+//     _id: "#ORD-086",
+//     date: "Yesterday",
+//     time: "08:30 PM",
+//     status: "Pending",
+//     total: 65.2,
+//   },
+//   {
+//     _id: "#ORD-085",
+//     date: "Yesterday",
+//     time: "07:45 PM",
+//     status: "Canceled",
+//     total: 15.0,
+//   },
+//   {
+//     _id: "#ORD-084",
+//     date: "Yesterday",
+//     time: "06:20 PM",
+//     status: "Completed",
+//     total: 89.5,
+//   },
+// ];
 
 // Tabs for filtering orders
 const tabs = [
@@ -123,14 +123,59 @@ const StatusBadge: React.FC<{ status: Order["status"] }> = ({ status }) => {
 // Main CustomerOrders Component
 const CustomerOrders: React.FC = () => {
   const [activeTab, setActiveTab] = useState("All Orders");
+  const [ordersData, setOrdersData] = useState<Order[]>([]);
 
   // Helper for formatting currency
-  const formatCurrency = (amount: number) => {
+  const formatCurrency = (total: number) => {
     return new Intl.NumberFormat("en-US", {
       style: "currency",
       currency: "USD",
-    }).format(amount);
+    }).format(total);
   };
+
+  useEffect(() => {
+    const fetchOrders = async () => {
+      try {
+        const result = await fetch("http://localhost:3000/api/product-orders/", {
+          method: "GET",
+        })
+        const data = await result.json();
+
+        if (!result.ok) {
+          throw new Error(data.message);
+        }
+
+        console.log("Data value: ");
+        console.log(data.data);
+        data.data.map((order: any) => {
+          console.log("calling data.data.map");
+
+          const rawOrderDate = new Date(order.orderDate);
+          const orderDate = rawOrderDate.toLocaleDateString();
+          const orderTime = rawOrderDate.toLocaleTimeString([], {
+            hour: "2-digit",
+            minute: "2-digit",
+            hour12: true,
+          });
+          console.log("order date: ", orderDate);
+          console.log("order time: ", orderTime);
+          setOrdersData((previous) => {
+            return [...previous, {
+              _id: order._id,
+              status: order.status,
+              total: Number(order.total['$numberDecimal']),
+              date: orderDate,
+              time: orderTime
+            }]
+          })
+        });
+      } catch (err) {
+        console.error(err);
+      }
+    }
+
+    fetchOrders();
+  }, []);
 
   return (
     <div className="min-h-screen bg-gray-50 p-8 font-sans antialiased">
@@ -175,11 +220,10 @@ const CustomerOrders: React.FC = () => {
             <button
               key={tab}
               onClick={() => setActiveTab(tab)}
-              className={`px-3 py-2 font-mediumtext-sm rounded-md whitespace-nowrap ${
-                activeTab === tab
-                  ? "bg-green-500 text-white"
-                  : "text-gray-500 hover:text-gray-700 hover:bg-gray-100"
-              }`}
+              className={`px-3 py-2 font-mediumtext-sm rounded-md whitespace-nowrap ${activeTab === tab
+                ? "bg-green-500 text-white"
+                : "text-gray-500 hover:text-gray-700 hover:bg-gray-100"
+                }`}
             >
               {tab}
             </button>
@@ -214,7 +258,7 @@ const CustomerOrders: React.FC = () => {
                 scope="col"
                 className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
               >
-                Amount
+                total
               </th>
               <th
                 scope="col"
@@ -227,11 +271,11 @@ const CustomerOrders: React.FC = () => {
           <tbody className="bg-white divide-y divide-gray-200">
             {ordersData.map((order, index) => (
               <tr
-                key={order.id}
+                key={order._id}
                 className={index % 2 === 0 ? "bg-white" : "bg-gray-50"}
               >
                 <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                  {order.id}
+                  {order._id}
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                   <div className="font-medium text-gray-900">{order.date}</div>
@@ -241,7 +285,7 @@ const CustomerOrders: React.FC = () => {
                   <StatusBadge status={order.status} />
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                  {formatCurrency(order.amount)}
+                  {formatCurrency(order.total)}
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                   {/* Actions column is empty in the design */}

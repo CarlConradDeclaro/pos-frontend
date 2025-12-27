@@ -28,10 +28,9 @@ export interface PurchaseOrderItem {
 const MOCK_PRODUCTS: Product[] = [
   {
     id: 1,
-    name: "Classic Beef Burger",
+    name: "Beef Burger",
     category: "Ulam",
     price: 32.0,
-    imageUrl: "salad.jpg",
     unit: "/pc",
   },
   {
@@ -39,15 +38,15 @@ const MOCK_PRODUCTS: Product[] = [
     name: "Margherita Pizza",
     category: "Ulam",
     price: 14.0,
-    imageUrl: "salad.jpg",
+    imageUrl: "https://images.pexels.com/photos/19102880/pexels-photo-19102880/free-photo-of-cut-margherita-pizza.jpeg",
     unit: "/pc",
   },
   {
     id: 3,
     name: "Sparkling Cola",
-    category: "drink",
+    category: "Drinks",
     price: 8.0,
-    imageUrl: "salad.jpg",
+    imageUrl: "https://cdn12.picryl.com/photo/2016/12/31/can-coca-coke-food-drink-d39c15-1024.jpg",
     unit: "/pc",
   },
   {
@@ -55,7 +54,7 @@ const MOCK_PRODUCTS: Product[] = [
     name: "Garlic Bread Basket",
     category: "side",
     price: 64.99,
-    imageUrl: "salad.jpg",
+    imageUrl: "https://pixahive.com/wp-content/uploads/2020/09/Garlic-bread-for-breakfast-96812-pixahive.jpg",
     unit: "/pc",
   },
   {
@@ -63,7 +62,7 @@ const MOCK_PRODUCTS: Product[] = [
     name: "Garden Salad",
     category: "side",
     price: 59.99,
-    imageUrl: "salad.jpg",
+    imageUrl: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQRVOyL-eLWhNn9b5YCiAvRoMycuwgU_ZJn8Q&s",
     unit: "/pc",
   },
   {
@@ -71,7 +70,7 @@ const MOCK_PRODUCTS: Product[] = [
     name: "Artisan Cheese Platter",
     category: "side",
     price: 69.99,
-    imageUrl: "salad.jpg",
+    imageUrl: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTpk_cXF7aHnxV6IM6PptoqrIcv6K40Th_v1A&s",
     unit: "/pc",
   },
   {
@@ -79,7 +78,7 @@ const MOCK_PRODUCTS: Product[] = [
     name: "Spicy Chicken Wings",
     category: "main",
     price: 69.99,
-    imageUrl: "salad.jpg",
+    imageUrl: "https://images.pexels.com/photos/13785146/pexels-photo-13785146.jpeg",
     unit: "/pc",
   },
   {
@@ -87,7 +86,7 @@ const MOCK_PRODUCTS: Product[] = [
     name: "New York Cheesecake",
     category: "dessert",
     price: 74.99,
-    imageUrl: "salad.jpg",
+    imageUrl: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRo0Ae3Ww6L-JyI5wnxElkN2d1_xCdhPowkrA&s",
     unit: "/pc",
   },
   {
@@ -95,7 +94,7 @@ const MOCK_PRODUCTS: Product[] = [
     name: "Orange Juice",
     category: "drink",
     price: 59.99,
-    imageUrl: "salad.jpg",
+    imageUrl: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ2DNw4MYARRy8RTIICSjvh5w35-NSMpVDWWA&s",
     unit: "/pc",
   },
   {
@@ -103,7 +102,7 @@ const MOCK_PRODUCTS: Product[] = [
     name: "Garlic Mashed Potatoes",
     category: "side",
     price: 59.99,
-    imageUrl: "tacos.jpg",
+    imageUrl: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSEwUC-Y1Cf1Meyloea6sbG3_QGUVGqBL3QEA&s",
     unit: "/pc",
   },
   {
@@ -111,7 +110,7 @@ const MOCK_PRODUCTS: Product[] = [
     name: "Fish and Chips",
     category: "main",
     price: 59.99,
-    imageUrl: "tacos.jpg",
+    imageUrl: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRiKKJDLQGSTrh0r4CiST4FX094x6AVIpsq7A&s",
     unit: "/pc",
   },
 ];
@@ -212,6 +211,44 @@ const PosScreen = () => {
   const closeConfirmPoModal = () => {
     setIsModalActive(false);
   };
+
+  const createPurchaseOrderRequest = async () => {
+    console.log("Starting purchase order request");
+    try {
+      const orderDate = new Date();
+      const productsArray = [...poItems.values()];
+      console.log('products array value');
+      console.log(productsArray);
+      const payload = {
+        orderDate: orderDate,
+        status: "Pending",
+        products: productsArray,
+        subtotal: subtotalAmount,
+        tax: taxAmount,
+        total: totalAmount
+      };
+      const result = await fetch("http://localhost:3000/api/product-orders", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(payload),
+      });
+
+      if (result.status === 201) {
+        alert("Purchase Order created");
+        setIsModalActive(false);
+      } else {
+        const data = await result.json();
+        console.log(data);
+        throw new Error(data.message);
+      }
+    } catch (err) {
+      alert("Error creating Purchase Order, check logs");
+      console.error(err);
+      setIsModalActive(false);
+    }
+  }
 
   // For filtering the products based on the clicked category and searchbar
   useEffect(() => {
@@ -333,7 +370,7 @@ const PosScreen = () => {
               key={product.id}
               style=""
               product={product}
-              imageLink={`https://upload.wikimedia.org/wikipedia/commons/b/be/Burger_King_Angus_Bacon_%26_Cheese_Steak_Burger.jpg`}
+              imageLink={product.imageUrl ?? "https://cdn.shopify.com/s/files/1/0481/1980/8157/files/20240523124901-img_9404.jpg?v=1716468542&width=1600&height=900"}
               imageAlternative={product.name}
               currentQuantity={poItems.get(product.name)?.quantity || 0}
               handlePoItems={handlePoItems}
@@ -401,24 +438,24 @@ const PosScreen = () => {
                       // otherwise use data from API response (item.price)
                       const product: Product = inventoryProduct
                         ? {
-                            ...inventoryProduct,
-                            id: inventoryProduct.id, // Use actual ID
-                            // Use MOCK_PRODUCTS image if available, otherwise a placeholder
-                            imageUrl:
-                              "https://upload.wikimedia.org/wikipedia/commons/b/be/Burger_King_Angus_Bacon_%26_Cheese_Steak_Burger.jpg",
-                            category: inventoryProduct.category,
-                          }
+                          ...inventoryProduct,
+                          id: inventoryProduct.id, // Use actual ID
+                          // Use MOCK_PRODUCTS image if available, otherwise a placeholder
+                          imageUrl:
+                            "https://upload.wikimedia.org/wikipedia/commons/b/be/Burger_King_Angus_Bacon_%26_Cheese_Steak_Burger.jpg",
+                          category: inventoryProduct.category,
+                        }
                         : {
-                            // Fallback for an item not found in MOCK_PRODUCTS
-                            id: MOCK_PRODUCTS.length + index + 1, // Ensure unique ID
-                            name: item.name,
-                            price: item.price,
-                            unit: "pcs",
-                            imageAlt: item.name,
-                            imageUrl:
-                              "https://upload.wikimedia.org/wikipedia/commons/b/be/Burger_King_Angus_Bacon_%26_Cheese_Steak_Burger.jpg",
-                            category: "Recommendation",
-                          };
+                          // Fallback for an item not found in MOCK_PRODUCTS
+                          id: MOCK_PRODUCTS.length + index + 1, // Ensure unique ID
+                          name: item.name,
+                          price: item.price,
+                          unit: "pcs",
+                          imageAlt: item.name,
+                          imageUrl:
+                            "https://upload.wikimedia.org/wikipedia/commons/b/be/Burger_King_Angus_Bacon_%26_Cheese_Steak_Burger.jpg",
+                          category: "Recommendation",
+                        };
 
                       return (
                         // Adjusted width to w-[150px]
@@ -509,9 +546,10 @@ const PosScreen = () => {
           <ConfirmPoModal
             isOpen={isModalActive}
             onCloseFunc={closeConfirmPoModal}
-            onConfirmFunc={closeConfirmPoModal}
+            onConfirmFunc={createPurchaseOrderRequest}
             poNumber="PO-2025-00128"
             supplierName="Metro Meats Inc."
+            items={poItems}
             totalItems={totalItems}
             totalAmount={totalAmount}
           />
